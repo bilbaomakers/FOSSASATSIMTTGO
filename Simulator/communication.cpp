@@ -266,6 +266,8 @@ void Communication_Send_System_Info(bool useRtty) {
 
   // when transitting via RTTY, convert bytes to ASCII chars
   if(useRtty) {
+
+    
     // read callsign from EEPROM
     uint8_t callsignLen = Persistent_Storage_Read<uint8_t>(EEPROM_CALLSIGN_LEN_ADDR);
     char* callsign = new char[callsignLen];
@@ -309,10 +311,12 @@ void Communication_Send_System_Info(bool useRtty) {
     Communication_Set_Modem(modem);
 
     // deallocate memory
-    delete[] callsign;
+    //delete[] callsign;
   } else {
     // send as raw bytes
+    FOSSASAT_DEBUG_PRINTLN("Enviando RAW DATA");
     Communication_Send_Response(RESP_SYSTEM_INFO, optData, optDataLen);
+    FOSSASAT_DEBUG_PRINTLN("RAW DATA OK");
   }
 
   // deallocate memory
@@ -361,7 +365,7 @@ void Comunication_Parse_Frame(uint8_t* frame, size_t len) {
   }
 
   // deallocate memory
-  delete[] callsign;
+  //delete[] callsign;
 
   // check optional data presence
   if(optDataLen > 0) {
@@ -434,21 +438,31 @@ void Communication_Execute_Function(uint8_t functionId, uint8_t* optData, size_t
 
 int16_t Communication_Send_Response(uint8_t respId, uint8_t* optData, size_t optDataLen, bool overrideModem) {
   // read callsign from EEPROM
+  
+  FOSSASAT_DEBUG_PRINTLN("Establecer callsign");
+  /*
   uint8_t callsignLen = Persistent_Storage_Read<uint8_t>(EEPROM_CALLSIGN_LEN_ADDR);
+  uitt8_t callsignLen = sizeof(s_callsign);
   char* callsign = new char[callsignLen];
   System_Info_Get_Callsign(callsign, callsignLen);
+  */
+
+  char* callsign = "FOSSASAT-1";
 
   // build response frame
+  FOSSASAT_DEBUG_PRINTLN("Formatear Respuesta");
   uint8_t len = FCP_Get_Frame_Length(callsign, optDataLen);
   uint8_t* frame = new uint8_t[len];
   FCP_Encode(frame, callsign, respId, optDataLen, optData);
 
   // send response
+  FOSSASAT_DEBUG_PRINTLN("Transmitiendo RAW DATA");
   int16_t state = Communication_Transmit(frame, len, overrideModem);
 
+  FOSSASAT_DEBUG_PRINTLN("Liberar memoria");
   // deallocate memory
-  delete[] frame;
-  delete[] callsign;
+  //delete[] frame;
+  //delete[] callsign;
 
   return(state);
 }
@@ -497,6 +511,9 @@ int16_t Communication_Transmit(uint8_t* data, uint8_t len, bool overrideModem) {
       return(ERR_TX_TIMEOUT);
     }
   }
+
+  FOSSASAT_DEBUG_PRINT(F("Transmision Terminada. Cod Salida: "));
+  FOSSASAT_DEBUG_PRINTLN(F(state));
 
   // transmission done, set mode standby
   state = radio.standby();

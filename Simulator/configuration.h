@@ -36,8 +36,8 @@
 #define ANALOG_IN_RANDOM_SEED                           A3  // used as source for randomSeed(), should be left floating
 #define RADIO_NSS                                       18
 #define RADIO_DIO0                                      26
-#define RADIO_DIO1                                      12
-#define RADIO_BUSY                                      12
+#define RADIO_DIO1                                      33
+#define RADIO_BUSY                                      33
 
 
 // MCU temperature sensor configuration
@@ -50,7 +50,7 @@
 //#define RADIO_SX126X                                            // also uncomment this line when using SX126x!!!
 
 // comment out to disable RTTY
-#define RTTY_ENABLED
+//#define RTTY_ENABLED
 
 // common
 #define SYNC_WORD                                       0x0F0F
